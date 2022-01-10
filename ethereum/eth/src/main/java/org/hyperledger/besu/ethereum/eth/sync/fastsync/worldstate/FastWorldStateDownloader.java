@@ -25,6 +25,8 @@ import org.hyperledger.besu.metrics.BesuMetricCategory;
 import org.hyperledger.besu.plugin.services.MetricsSystem;
 import org.hyperledger.besu.services.tasks.CachingTaskCollection;
 
+import jline.internal.Log;
+
 import java.time.Clock;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -107,6 +109,10 @@ public class FastWorldStateDownloader implements WorldStateDownloader {
         return failed;
       }
 
+      Optional<BlockHeader> checkNull = Optional.ofNullable(fastSyncState.getPivotBlockHeader().get());
+      if(checkNull.isEmpty()){
+        Log.error("Pivot Block not present");
+      }
       final BlockHeader header = fastSyncState.getPivotBlockHeader().get();
       final Hash stateRoot = header.getStateRoot();
       if (worldStateStorage.isWorldStateAvailable(stateRoot, header.getHash())) {
